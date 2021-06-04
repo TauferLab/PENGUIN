@@ -54,3 +54,8 @@ Pandas v. 0.24.2
 Numpy v. 1.17.4
 
 Sci-Py v. 1.3.1
+
+### Copyright and License
+Copyright (c) 2021, Global Computing Lab
+PENGUIN is distributed under terms of the Apache License, Version 2.0 with LLVM Exceptions.
+See LICENSE for more details.
