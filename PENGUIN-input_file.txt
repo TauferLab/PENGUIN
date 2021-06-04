@@ -1,0 +1,2 @@
+DATASET loss_or_accuracy N E e_max threshold C_min loss_check L DATA_DIRECTORY DATA_SUMMARY_SAVEPATH DATA_SUMMARY_LOADPATH
+CIFAR100 accuracy 3 0.5 20 0.5 3 False 5 ~/CIFAR100/models/ ~/CIFAR100/PENGUINResults/ ~/CIFAR100/PENGUINResults/
