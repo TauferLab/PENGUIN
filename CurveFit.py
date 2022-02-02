@@ -12,8 +12,8 @@ def fitAcc(x,y):
     p0=[10, 1.001, 100]
     
     #lower bounds for (a, b, c) are (0.5, 1.0, 0.0) respectively
-    #upper bounds for (a, b, c) are (102.5, infinity, infinity) respectively
-    curvefitBounds=[(0.5,1.0,0.0),(102.5, np.inf, np.inf)]
+    #upper bounds for (a, b, c) are (200.0, infinity, infinity) respectively
+    curvefitBounds=[(0.5,1.0,0.0),(200.0, np.inf, np.inf)]
 
     try:
         #using curve_fit to fit the x, y values to the function given by expAccFn, specifying initial values and bounds for a,b,c.

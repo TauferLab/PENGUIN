@@ -28,17 +28,21 @@ numToConverge=CONFIGURATIONS["N"][0]
 
 epochFrequency=CONFIGURATIONS["E"][0]
 
-#e_max is the maximum number of epochs PENGUIN will train.
+#e_max is the maximum number of epochs PENGUIN will use.
 e_max=CONFIGURATIONS["e_max"][0]
 
 #threshold=maximum variability allowed for convergence
 threshold=CONFIGURATIONS["threshold"][0]
 
+# --- LOSS CHECK ---
+# a loss check can be used to disallow stabilization if the loss is still decreasing.
+# it may be helpful for especially noisy datasets.
+# we have not used a loss check in our results, but we have built it in as a possibility in the future.
 #lossCheck = boolean to toggle on or off a loss check
 lossCheck = CONFIGURATIONS["loss_check"][0]
-
 #epoch threshold for the loss check
 lossCheckEpochThreshold = CONFIGURATIONS["L"][0]
+# --- END LOSS CHECK SEGMENT ---
 
 #initializing list to store the y-values of the predictive function returned by PENGUIN's curve fit
 PREDICTEDFN=[]
@@ -57,7 +61,8 @@ maxValAcc_Predictions=np.array([])
 
 #looping through all the CNNs--each item is the filepath for a given CNN's datafile
 for item in datafiles:
-            
+#for item in "/Users/ariel/Downloads/CIFAR-100_models/2021_02_15_14_01_32_105932.txt",:
+    print(item)
     #the name of the file is the model name--to get the model ID, we split off just the filename from the full path to the file
     modelName=item.split("/")[-1]
     print(modelName)
@@ -91,12 +96,13 @@ for item in datafiles:
         timeMenndlTrainingEnds = 20.0
 
     #--!CurveFit Accuracy:    
-    print("PENGUIN on ACCURACY")
+    print("PENGUIN fitting to predict ACCURACY")
 
+    #uncomment below to grab the max observed accuracy index and value:
     #get index of the maximum accuracy
-    MAXACC_INDEX = np.argmax(accuracy)
+    #MAXACC_INDEX = np.argmax(accuracy)
     #get the value of the maximum accuracy
-    maxAcc = accuracy[MAXACC_INDEX]
+    #maxAcc = accuracy[MAXACC_INDEX]
 
     #in comparing to the NAS, we require PENGUIN to terminate at e_max 20 epochs if it does not terminate earlier than that.
     totalNumEpochs = e_max
@@ -108,16 +114,23 @@ for item in datafiles:
     valLoss=valLoss[0:maxDatapoints]
     accuracy=accuracy[0:maxDatapoints]
 
-    #get index of the maximum accuracy across the e_max epochs of datapoints
+    # this is the actual accuracy at the epoch we are trying to predict accuracy; 
+    # this is the ground truth to compare our predicitons to
+    actualAcc = accuracy[-1]
+    actualAccEpoch = epoch[-1]
+    print("actual acc at epoch "+str(actualAccEpoch)+" = "+str(actualAcc))
+
+    #get index of the observed maximum accuracy across just the maxDatapoints used by PENGUIN
     truncated_MAXACC_INDEX = np.argmax(accuracy)
-    #get the value of the maximum accuracy across the e_max epochs of datapoints
+    #get the value of the observed maximum accuracy across just the maxDatapoints used by PENGUIN
     truncated_maxAcc = accuracy[truncated_MAXACC_INDEX]
 
-
+    yshift=1.0
+    xshift=2.0
     #calling stabilizer & curve fit to predict max acc
-    stabilizedAcc, aAcc, bAcc, cAcc, endepochAcc, curvefitAccTrainingIndex, predictedfnAcc = analyzer.analyzePrediction(cf.fitAcc, cf.expAccFn, thresholdFns.withinNumberThreshold, epoch, valLoss, accuracy=accuracy, index=2, threshold=threshold, numToConverge=numToConverge, cutErrorPoints=False, yshift=1.0, xshift=2.0, lossCheck=lossCheck, neverLearnAccMarker=19.61, lossCheckEpochThreshold=lossCheckEpochThreshold)
+    stabilizedAcc, predictedAcc, aAcc, bAcc, cAcc, endepochAcc, curvefitAccTrainingIndex, predictedfnAcc = analyzer.analyzePrediction(cf.fitAcc, cf.expAccFn, thresholdFns.withinNumberThreshold, epoch, totalNumEpochs, valLoss, accuracy=accuracy, index=2, threshold=threshold, numToConverge=numToConverge, cutErrorPoints=False, yshift=yshift, xshift=xshift, lossCheck=lossCheck, neverLearnAccMarker=19.61, lossCheckEpochThreshold=lossCheckEpochThreshold)
     print("predicted accuracy="+str(aAcc))
-    print("Fitted function: a = "+str(aAcc)+", b = "+str(bAcc)+", c = "+str(cAcc))
+    print("Fitted function: a = "+str(aAcc)+", b = "+str(bAcc)+", c = "+str(cAcc)+"\nFitted fn used xshift "+str(xshift)+" and yshift "+str(yshift))
 
     #if want to see the x,y values of the fn predicted by curve fit predict, save PREDICTEDACCFN to a csv
     PREDICTEDACCFN={'epochs':epoch,'actualAccuracy': accuracy, 'predictedAccFunction': predictedfnAcc}
@@ -125,13 +138,16 @@ for item in datafiles:
     #PREDICTEDACCFN.to_csv(directory + "curvePredictedValAccFn.csv", index=False, header=True)
 
     #calculating the error in the predicted max acc:
-    accError=np.absolute(maxAcc-aAcc)
+    #accError=np.absolute(maxAcc-aAcc)
+    accError=np.absolute(actualAcc-predictedAcc)
+    #maxValAcc_Error=str(modelName)+" "+str(numConvolutions)+" "+str(learning_rate[0])+" "+str(batch_size[0])+" "+str(endepochAcc)+" "+str(timeMenndlTrainingEnds)+" "+str(truncated_maxAcc)+" "+str(aAcc)+" "+str(accError)+" "+str(predictedAcc)+" "+str(actualAcc)
+    #maxValAcc_Errors=np.append(maxValAcc_Errors,maxValAcc_Error)
     
-    maxValAcc_Prediction=str(modelName)+" "+str(learning_rate[0])+" "+str(batch_size[0])+" "+str(endepochAcc)+" "+str(maxAcc)+" "+str(aAcc)+" "+str(accError)+" "+str(timeMenndlTrainingEnds)+" "+str(truncated_maxAcc)+" "+str(numConvolutions)
+    maxValAcc_Prediction=str(modelName)+" "+str(numConvolutions)+" "+str(learning_rate[0])+" "+str(batch_size[0])+" "+str(endepochAcc)+" "+str(timeMenndlTrainingEnds)+" "+str(truncated_maxAcc)+" "+str(aAcc)+" "+str(accError)+" "+str(predictedAcc)+" "+str(actualAcc)
     maxValAcc_Predictions=np.append(maxValAcc_Predictions,maxValAcc_Prediction)
 
     ACCPREDICTIONS=pd.DataFrame(maxValAcc_Predictions)
-    ACCPREDICTIONS.columns=["modelID learningRate batchSize timeStabilized actualMaxAcc predictedMaxAcc error timeMenndlTrainingEnds truncatedMaxAcc numConvLayers",]
+    ACCPREDICTIONS.columns=["modelID numConvLayers learningRate batchSize timeStabilized timeMenndlTrainingEnds maxAcc aValue error predictedAcc actualAcc",]
 
     #saving PENGUIN's predictions, metadata about the NNs, the actual acc values, and the prediction error in a csv file.
     ACCPREDICTIONS.to_csv(path_or_buf=str(summaryDataDir)+DATASET+"-PENGUIN_results-N_"+str(numToConverge)+"-t_"+str(threshold)+".csv", index=False, header=True)
