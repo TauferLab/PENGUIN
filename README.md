@@ -41,14 +41,6 @@ This script is responsible for simple processing tasks associated with loading d
 ### PENGUIN Dependencies
 Python v. 3.6.10
 
-Pytorch v. 1.3.1
-
-Magma v. 2.5.2
-
-Bazel v. 0.29.1
-
-Torchvision v. 0.4.2
-
 Pandas v. 0.24.2
 
 Numpy v. 1.17.4
