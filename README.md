@@ -1,4 +1,6 @@
 ### Running PENGUIN
+See the instructions in the "TestRun.md" file to run a small test of PENGUIN. 
+
 PENGUIN is currently designed to run statically for testing, using data from trained CNNs. The CNNs we used in our tests are available in our Harvard Dataverse repository: https://doi.org/10.7910/DVN/ZXTCGF. In order to replicate these tests, the user can download our CNN dataset, storing all CNNs for a given benchmark dataset in a common folder. The user should add the folder where the CNNs are stored to `PENGUIN-input_file.txt` under `Data_Directory` and update `Data_Summary_Savepath` to the directory where they wish the results of PENGUIN's run to be saved. Then, running `PENGUIN_Main` will execute PENGUIN on the CNNs stored in the `Data_Directory` folder and save the results in `Data_Summary_Savepath`.
 
 ### PENGUIN_Main
