@@ -1,37 +1,42 @@
 #import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
+import math
 from scipy.optimize import curve_fit
+import FunctionIndex as fn
 
-#exponential function to model accuracy
-def expAccFn(x, a, b, c):
-    return a-b**(c-x)
+#only need to import this if wish to use sys.exit() during testing
+import sys
 
-#fitting the accuracy exponential function to the list of observed (x,y) accuracy values
-def fitAcc(x,y):
-    #initial values for a,b,c:
-    p0=[10, 1.001, 100]
-    
-    #lower bounds for (a, b, c) are (0.5, 1.0, 0.0) respectively
-    #upper bounds for (a, b, c) are (200.0, infinity, infinity) respectively
-    curvefitBounds=[(0.5,1.0,0.0),(200.0, np.inf, np.inf)]
+#fitting the chosen function to the list of observed (x,y) fitness values
+#vector p0 contains the initial parameter values for the function of choice
+def fitLearningCurve(function, x, y, p0, lowerBounds, upperBounds):
+
+    numParameters = len(p0)
+    curvefitBounds = [lowerBounds,upperBounds]
 
     try:
-        #using curve_fit to fit the x, y values to the function given by expAccFn, specifying initial values and bounds for a,b,c.
-        param=curve_fit(expAccFn, x, y, p0=p0, bounds=curvefitBounds)
-        
-        expFitParameters=param[0]
-        
-        a=expFitParameters[0]
-        b=expFitParameters[1]
-        c=expFitParameters[2]
-        #print("fitAccExp: a = "+str(a)+" b = "+str(b)+" c = "+str(c))
+        #using curve_fit to fit the x, y values to the given parametric function, specifying initial values and bounds for parameters.
+        #curve fit returns the optimized values for fn parameters, as well as the covariance calculations (currently, we don't use covariance)
+        param,covariance=curve_fit(function, x, y, p0=p0, bounds=curvefitBounds)
+        fittedParameterValues=param
 
-        print("Curve Fit successful")
+        #print("Curve Fit successful")
 
-        #returning the max accuracy prediction and the vector of y values of the fitted function
-        return(a, b, c)
+        #returning the parameter values of the fitted function
+        return fittedParameterValues
 
     except:
-        #Note: For a given CNN it is normal for CurveFit to be unable to find values for a, b, c at some iterations. Don't be alarmed if you see this message occasionally.
-        print("CurveFit unable to select a, b, c!")
-        return(float('inf'),float('inf'),float('inf'))
+        #Note: For a given CNN it is normal for CurveFit to be unable to find values for the parameters at some iterations. Don't be alarmed if you see this message occasionally.
+        print("entered except - CurveFit unable to select values for parameters!")
+        
+        expFitParameters=[]
+        for item in range(numParameters):
+            expFitParameters.append(float('inf'))
+        print(expFitParameters)
+        #sys.exit()
+        return expFitParameters
+
+
+    
+    
