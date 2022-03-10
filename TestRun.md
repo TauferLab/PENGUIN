@@ -1,17 +1,18 @@
 ### PENGUIN Test Run
-Begin by reading the README; it includes information about each of the code files.
+
+This repo contains a small sample of three NN data files in `data-CIFAR100/models`, and PENGUIN can be tested at a small scale just on these three files. The first paragraph of the README describes how to perform a test run of PENGUIN on our entire dataset. PENGUIN may also be tested with different data, functions, or parameter values by specifying these settings in the command line arguments as described in the README.
+
+Begin by reading through the README; it includes information about each of the code files.
 
 To run a small-scale PENGUIN test, you will need to: 
   1. Clone this repo. Call `git clone https://github.com/TauferLab/PENGUIN`  from inside whatever folder you would like the code repository to be stored in.
-  2. Create a new folder inside `data-CIFAR100/` called `PENGUINResults`. This is where the results of your run will be stored.
-  3. Run PENGUIN_Main.py
-  4. Check that the contents of the file created in `data/CIFAR100/PENGUINResults/` matches the expected output at the bottom of this document.
-
-The first paragraph of the README describes how to test a run of PENGUIN on our entire dataset. This repo contains a small sample of three of our NN data files in `data-CIFAR100/models`, and PENGUIN can be tested at a small scale just on these three files. The config file `PENGUIN-input_file.txt` is setup to automatically grab the data from the folder `data-CIFAR100/models`. This is why a test can be run just by running `PENGUIN_Main.py`. To run other tests with PENGUIN, it is necessary to update the settings in the input file as described in the README.
+  2. Create a new folder inside `data-CIFAR100/` to store results of your run, called for example `PENGUINResults`. 
+  3. Run PENGUIN_Main.py as follows: `python3 PEng4NN_Main.py --loadDirectory data-CIFAR100/models/ --saveDirectory data-CIFAR100/PENGUINResults/`  *(Note: `loadDirectory` should be wherever the NN data is stored, and `saveDirectory` should the path to whatever folder you created to store results of the run. A small sample set containing three of our NN data files is stored in `data-CIFAR100/models/`, so using this path as the loadDirectory when running PENGUIN_Main.py will test PENGUIN on this small sample set.)*
+  4. Check that the content of the file created in `data/CIFAR100/PENGUINResults/` matches the expected output at the bottom of this document.
 
 The code is thoroughly commented; reading through it should clarify the overall flow of the PENGUIN_Main and PredictionAnalyzer files.
 
-Once the test is running and your output matches, you can try playing around with different values for N and threshold in the file `PENGUIN-input_file.txt`
+Once the test is running and your output matches, try varying `N` and `threshold` values for different PENGUIN runs, using the "-N" and "--threshold" flags to specify values for these parameters at command line. (N must be an integer value; the default value is 3. Try different values for N between e.g. 2 and 6. Threshold is a float; the default value is 0.5. Try different values for threshold between e.g. 0.1 and 1.0)
 
 EXPECTED OUTPUT:
 
